@@ -1,0 +1,33 @@
+version: "2"
+services:
+  orthanc-bar:
+    image: osimis/orthanc
+    ports: ["4244:4242", "8044:8042"]
+    volumes:
+      - orthanc-bar-storage:/var/lib/orthanc/db
+    restart: unless-stopped
+    environment:
+      ORTHANC__NAME: "Orthanc Bar"
+      ORTHANC__REGISTERED_USERS: |
+        { "bar" : "bar" }
+      ORTHANC__ORTHANC_PEERS: |
+        {
+            "orthanc-foo": {
+              "Url": "https://long-dots-act-170-238-214-134.loca.lt", 
+              "Username": "foo",
+              "Password": "foo",
+              "RemoteSelf": "orthanc-bar"
+            }
+        }
+      VERBOSE_ENABLED: "true"
+      TRANSFERS_PLUGIN_ENABLED: "true"
+      ORTHANC__TRANSFERS__MAX_HTTP_RETRIES: 5
+      DICOM_MODALITIES: |
+        {
+          "Horos": ["target-horos", "10.0.0.143", 11112],
+          "weasis": ["weasis", "10.0.0.109", 11113],
+          "iPad": ["IPAD", "10.0.0.151", 4096],
+          "app2": ["IDV-iOS", "10.0.0.151", 11112]
+        }
+volumes:
+  orthanc-bar-storage:

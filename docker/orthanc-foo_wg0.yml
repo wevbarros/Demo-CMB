@@ -1,0 +1,39 @@
+version: "2"
+services:
+  orthanc-foo:
+    image: osimis/orthanc
+    ports: ["4243:4242", "8043:8042"]
+    privileged: true
+    network_mode: "host"
+    cap_add:
+     - NET_ADMIN
+    volumes:
+      - orthanc-foo-storage:/var/lib/orthanc/db
+      - ../src:/home/src
+      - ./wg0.conf:/home/wg0.conf
+      - ./run.sh:/home/run.sh
+    restart: unless-stopped
+    #environment:
+      #- PYTHONUNBUFFERED=1
+    environment:
+      ORTHANC__NAME: "Orthanc Foo"
+      ORTHANC__REGISTERED_USERS: |
+        { "foo" : "foo" }
+      ORTHANC__ORTHANC_PEERS: |
+        {
+            "orthanc-bar": {
+              "Url": "http://34.230.35.224:8044", 
+              "Username": "bar",
+              "Password": "bar",
+              "RemoteSelf": "orthanc-foo"
+            }
+        }
+      VERBOSE_ENABLED: "true"
+
+      TRANSFERS_PLUGIN_ENABLED: "true"
+      ORTHANC__TRANSFERS__MAX_HTTP_RETRIES: 5
+          
+    entrypoint:  /home/run.sh
+
+volumes:
+  orthanc-foo-storage:

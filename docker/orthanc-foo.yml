@@ -1,0 +1,29 @@
+version: "2"
+services:
+  orthanc-foo:
+    image: osimis/orthanc
+    ports: ["4243:4242", "8043:8042"]
+    volumes:
+      - orthanc-foo-storage:/var/lib/orthanc/db
+    restart: unless-stopped
+    environment:
+      ORTHANC__NAME: "Orthanc Foo"
+      ORTHANC__REGISTERED_USERS: |
+        { "foo" : "foo" }
+      ORTHANC__ORTHANC_PEERS: |
+        {
+            "orthanc-bar": {
+              "Url": "http://orthanc-bar:8042/", 
+              "Username": "bar",
+              "Password": "bar",
+              "RemoteSelf": "orthanc-foo"
+            }
+        }
+      VERBOSE_ENABLED: "true"
+
+      TRANSFERS_PLUGIN_ENABLED: "true"
+      ORTHANC__TRANSFERS__MAX_HTTP_RETRIES: 5
+
+
+volumes:
+  orthanc-foo-storage:
